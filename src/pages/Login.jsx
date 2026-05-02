@@ -6,12 +6,13 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   async function handleLogin() {
     setLoading(true);
     setError("");
     const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) setError("Identifiants incorrects ou accès non autorisé.");
+    if (error) setError("Identifiants incorrects : " + error.message);
     setLoading(false);
   }
 
@@ -33,14 +34,23 @@ export default function Login() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
-        <input
-          style={styles.input}
-          type="password"
-          placeholder="Mot de passe"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && handleLogin()}
-        />
+        <div style={{ position: "relative" }}>
+          <input
+            style={{ ...styles.input, paddingRight: 40 }}
+            type={showPassword ? "text" : "password"}
+            placeholder="Mot de passe"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleLogin()}
+          />
+          <button
+            style={styles.eyeBtn}
+            onClick={() => setShowPassword(!showPassword)}
+            type="button"
+          >
+            {showPassword ? "🙈" : "👁️"}
+          </button>
+        </div>
         <button style={styles.btn} onClick={handleLogin} disabled={loading}>
           {loading ? "Connexion…" : "Se connecter"}
         </button>
@@ -58,5 +68,6 @@ const styles = {
   subtitle: { color: "#64748b", fontSize: 13, margin: 0 },
   error: { background: "#fff1f2", color: "#e11d48", borderRadius: 8, padding: "10px 14px", fontSize: 13 },
   input: { border: "1px solid #e2e8f0", borderRadius: 8, padding: "10px 14px", fontSize: 14, outline: "none", width: "100%", boxSizing: "border-box" },
+  eyeBtn: { position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", fontSize: 16 },
   btn: { background: "#0a2540", color: "#fff", border: "none", borderRadius: 8, padding: "12px", fontSize: 14, fontWeight: 600, cursor: "pointer" },
 };
